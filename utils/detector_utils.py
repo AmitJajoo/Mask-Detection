@@ -10,14 +10,13 @@ detection_graph = tf.Graph()
 TRAINED_MODEL_DIR = 'frozen_graphs'
 # Path to frozen detection graph. This is the actual model that is used for the object detection.
 PATH_TO_CKPT_M = TRAINED_MODEL_DIR + '/frozen_inference_graph.pb'
-PATH_TO_CKPT_P = TRAINED_MODEL_DIR + '/ssd_frozen_inference_graph.pb'
 # List of the strings that is used to add correct label for each box.
 PATH_TO_LABELS_M = TRAINED_MODEL_DIR + '/labelmap.pbtxt'
-PATH_TO_LABELS_P = TRAINED_MODEL_DIR + '/labelmap_person.pbtxt'
+
 
 # NUM_CLASSES = 2
 NUM_CLASSES_M = 2
-NUM_CLASSES_P = 1
+
 
 # load label map using utils provided by tensorflow object detection api
 label_map_M = label_map_util.load_labelmap(PATH_TO_LABELS_M)
@@ -25,10 +24,6 @@ categories_M = label_map_util.convert_label_map_to_categories(
     label_map_M, max_num_classes=NUM_CLASSES_M, use_display_name=True)
 category_index_M = label_map_util.create_category_index(categories_M)
 
-label_map_P = label_map_util.load_labelmap(PATH_TO_LABELS_P)
-categories_P = label_map_util.convert_label_map_to_categories(
-    label_map_P, max_num_classes=NUM_CLASSES_P, use_display_name=True)
-category_index_P = label_map_util.create_category_index(categories_P)
 
 a = b = 0
 
@@ -50,7 +45,7 @@ def load_inference_graph(path):
     return detection_graph, sess
 
 
-def draw_box_on_image(num_hands_detect, score_thresh, scores, boxes, classes, im_width, im_height, image_np, person_det,
+def draw_box_on_image(num_hands_detect, score_thresh, scores, boxes, classes, im_width, im_height, image_np,
                       Orientation):
     # Determined using a piece of paper of known length, code can be found in distance to camera
     focalLength = 875
@@ -64,7 +59,6 @@ def draw_box_on_image(num_hands_detect, score_thresh, scores, boxes, classes, im
     color = None
     color0 = (255, 0, 0)
     color1 = (0, 50, 255)
-    color3 = (255, 255, 0)
 
     for i in range(num_hands_detect):
 
@@ -74,17 +68,15 @@ def draw_box_on_image(num_hands_detect, score_thresh, scores, boxes, classes, im
             # b=b+1
             # b=1
             # print(b)
-            if person_det:
-                id = 'Person'
-            else:
-                if classes[i] == 1:
-                    id = 'Mask'
+            
+            
+            if classes[i] == 1:
+                id = 'Mask'
                     # b=1
 
-                if classes[i] == 2:
-                    id = 'NO Mask'
-                    # avg_width = 3.0 # To compensate bbox size change
-                    # b=1
+            else:
+                id = 'NO Mask'
+                avg_width = 3.0 
 
             if i == 0:
                 color = color0
@@ -114,17 +106,10 @@ def draw_box_on_image(num_hands_detect, score_thresh, scores, boxes, classes, im
             cv2.putText(image_np, str(i) + ': ' + id, (int(left), int(top) - 5),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
 
-            cv2.putText(image_np, 'confidence: ' + str("{0:.2f}".format(scores[i])),
+            cv2.putText(image_np, 'percentage: ' + str("{0:.2f}".format(scores[i])),
                         (int(left), int(top) - 20),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-            '''
-            cv2.putText(image_np, 'distance from camera: '+str("{0:.2f}".format(dist)+' inches'),
-                        (int(im_width*0.65),int(im_height*0.9+30*i)),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.3, color, 2)
-            '''
-
-            # a=alertcheck.drawboxtosafeline(image_np,p1,p2,Line_Position2,Orientation)
             a = 0
 
         if hand_cnt == 0:
