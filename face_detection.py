@@ -17,7 +17,7 @@ ap.add_argument('-d', '--display', dest='display', type=int,
 args = vars(ap.parse_args())
 
 detection_graph_m, sess_m = detector_utils.load_inference_graph(detector_utils.PATH_TO_CKPT_M)
-detection_graph_p, sess_p = detector_utils.load_inference_graph(detector_utils.PATH_TO_CKPT_P)
+
 
 
 def save_data(no_of_time_hand_detected, no_of_time_hand_crossed):
@@ -138,22 +138,9 @@ if __name__ == '__main__':
             # Draw bounding boxeses and text
             # print(scores_m, classes_m)
             a, b = detector_utils.draw_box_on_image(
-                num_hands_detect, score_thresh, scores_m, boxes_m, classes_m, im_width, im_height, frame, False,
+                num_hands_detect, score_thresh, scores_m, boxes_m, classes_m, im_width, im_height, frame,
                 Orientation)
-            # lst1.append(a)
-            # lst2.append(b)
-            # no_of_time_hand_detected=no_of_time_hand_crossed=0
-
-            # Run image through tensorflow graph
-            boxes_p, scores_p, classes_p = detector_utils.detect_objects(
-                frame, detection_graph_p, sess_p)
-
-            # Line_Position2=orien_lines.drawsafelines(frame,Orientation,Line_Perc1,Line_Perc2)
-            # Draw bounding boxeses and text
-            print('boxes p', boxes_p)
-            a, b = detector_utils.draw_box_on_image(
-                num_hands_detect, score_thresh, scores_p, boxes_p, classes_p, im_width, im_height, frame, True,
-                Orientation)
+            
             lst1.append(a)
             lst2.append(b)
             no_of_time_hand_detected = no_of_time_hand_crossed = 0
